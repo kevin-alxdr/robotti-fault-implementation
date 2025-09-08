@@ -1,0 +1,14 @@
+class SensorGNSS_N
+
+instance variables
+	port : RealPort;
+
+	operations
+	public SensorGNSS_N : RealPort ==> SensorGNSS_N
+	SensorGNSS_N(p) ==
+		port := p;
+		
+	public get: () ==> real
+			get() == return port.getValue();
+	
+end SensorGNSS_N

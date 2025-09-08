@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription 	fmiVersion="2.0" 
+						modelName="ClosedLoopController" 
+						guid="{cc32b488-15ea-480f-8ece-6419ce900ac2}" 
+						description="" 
+						author="" 
+						version="Version 1" 
+						copyright="Copyright Overture tool (Aarhus University)" 
+						license="Some Overture FMI License" 
+						generationTool="Overture Tool FMI Exporter - v0.2.20"
+						generationDateAndTime="2020-10-08T17:52:37" 
+						variableNamingConvention="flat" 
+						numberOfEventIndicators="0">
+
+	<CoSimulation 	modelIdentifier="ClosedLoopController" 
+					needsExecutionTool="true" 
+					canHandleVariableCommunicationStepSize="true" 
+					canInterpolateInputs="false" 
+					maxOutputDerivativeOrder="0" 
+					canRunAsynchronuously="false" 
+					canBeInstantiatedOnlyOncePerProcess="false"
+					canNotUseMemoryManagementFunctions="true" 
+					canGetAndSetFMUstate="false" 
+					canSerializeFMUstate="false" 
+					providesDirectionalDerivative="false">
+		
+		
+			<SourceFiles>
+				<File name="HardwareInterface.vdmrt" />
+				<File name="System.vdmrt" />
+				<File name="World.vdmrt" />
+				<File name="acts\ActuatorSpeed.vdmrt" />
+				<File name="acts\ActuatorSteering.vdmrt" />
+				<File name="cont\AngleSteeringController.vdmrt" />
+				<File name="cont\ControlParameters.vdmrt" />
+				<File name="cont\ControlParamterScheduling.vdmrt" />
+				<File name="cont\Controller.vdmrt" />
+				<File name="cont\GuidanceController.vdmrt" />
+				<File name="cont\SteeringController.vdmrt" />
+				<File name="cont\SteeringErrorCalc.vdmrt" />
+				<File name="lib\ADRC.vdmrt" />
+				<File name="lib\CSV.vdmrt" />
+				<File name="lib\DTControl.vdmrt" />
+				<File name="lib\FMI.vdmrt" />
+				<File name="lib\FileReader.vdmrt" />
+				<File name="lib\IO.vdmrt" />
+				<File name="lib\MATH.vdmrt" />
+				<File name="lib\P.vdmrt" />
+				<File name="lib\PD.vdmrt" />
+				<File name="lib\PI.vdmrt" />
+				<File name="lib\PID.vdmrt" />
+				<File name="route\Route.vdmrt" />
+				<File name="route\WayPoint.vdmrt" />
+				<File name="sens\SensorGNSS.vdmrt" />
+				<File name="sens\SensorGNSS_E.vdmrt" />
+				<File name="sens\SensorGNSS_H.vdmrt" />
+				<File name="sens\SensorGNSS_N.vdmrt" />
+
+			</SourceFiles>
+		
+		</CoSimulation>
+
+
+
+	<LogCategories>
+		<Category name="logAll" />
+		<Category name="logError" />
+		<Category name="logFmiCall" />
+<!-- Category name="logShm" /-->
+<!-- Category name="logLaunch" /-->
+		<Category name="Protocol" />
+		<Category name="VdmOut" />
+		<Category name="VdmErr" />
+	</LogCategories>
+
+	<VendorAnnotations>
+		<Tool name="Overture">
+			<Overture>
+				<link valueReference="0" name="HardwareInterface.control_parameter_db0.value" />
+				<link valueReference="1" name="HardwareInterface.control_parameter_iwo.value" />
+				<link valueReference="2" name="HardwareInterface.control_parameter_pwc.value" />
+				<link valueReference="3" name="HardwareInterface.controller_type.value" />
+				<link valueReference="4" name="System.hwi.delta_f.value" />
+				<link valueReference="5" name="HardwareInterface.fname.value" />
+				<link valueReference="6" name="HardwareInterface.look_ahead_dist.value" />
+				<link valueReference="7" name="System.hwi.pos_theta.value" />
+				<link valueReference="8" name="System.hwi.pos_x.value" />
+				<link valueReference="9" name="System.hwi.pos_y.value" />
+				<link valueReference="10" name="System.hwi.speed.value" />
+				<link valueReference="11" name="HardwareInterface.speed_ref.value" />
+
+			</Overture>
+		</Tool>
+	</VendorAnnotations>
+
+
+	<ModelVariables>
+
+		<!-- Index 1 -->
+		<ScalarVariable name="control_parameter_db0" valueReference="0" causality="parameter" variability="fixed" initial="exact"><Real start="0.6" /></ScalarVariable>
+		<!-- Index 2 -->
+		<ScalarVariable name="control_parameter_iwo" valueReference="1" causality="parameter" variability="fixed" initial="exact"><Real start="2.0" /></ScalarVariable>
+		<!-- Index 3 -->
+		<ScalarVariable name="control_parameter_pwc" valueReference="2" causality="parameter" variability="fixed" initial="exact"><Real start="0.4" /></ScalarVariable>
+		<!-- Index 4 -->
+		<ScalarVariable name="controller_type" valueReference="3" causality="parameter" variability="fixed" initial="exact"><Integer start="4" /></ScalarVariable>
+		<!-- Index 5 -->
+		<ScalarVariable name="delta_f" valueReference="4" causality="output" variability="discrete" initial="approx"><Real start="0.0" /></ScalarVariable>
+		<!-- Index 6 -->
+		<ScalarVariable name="fname" valueReference="5" causality="parameter" variability="fixed" initial="exact"><String start="route.csv" /></ScalarVariable>
+		<!-- Index 7 -->
+		<ScalarVariable name="look_ahead_dist" valueReference="6" causality="parameter" variability="fixed" initial="exact"><Real start="0.2" /></ScalarVariable>
+		<!-- Index 8 -->
+		<ScalarVariable name="pos_theta" valueReference="7" causality="input" variability="discrete"><Real start="0.0" /></ScalarVariable>
+		<!-- Index 9 -->
+		<ScalarVariable name="pos_x" valueReference="8" causality="input" variability="discrete"><Real start="0.0" /></ScalarVariable>
+		<!-- Index 10 -->
+		<ScalarVariable name="pos_y" valueReference="9" causality="input" variability="discrete"><Real start="0.0" /></ScalarVariable>
+		<!-- Index 11 -->
+		<ScalarVariable name="speed" valueReference="10" causality="output" variability="discrete" initial="approx"><Real start="1.0" /></ScalarVariable>
+		<!-- Index 12 -->
+		<ScalarVariable name="speed_ref" valueReference="11" causality="parameter" variability="fixed" initial="exact"><Real start="1.0" /></ScalarVariable>
+
+	
+	</ModelVariables>
+
+	<ModelStructure>
+	<Outputs>
+			<Unknown index="5"  dependencies=""/>			<Unknown index="11"  dependencies=""/>
+	</Outputs>
+
+
+	</ModelStructure>
+
+</fmiModelDescription>

@@ -1,0 +1,3 @@
+time,step-size,{controller}.Steering_control.delta_f,{controller}.Steering_control.speed,{robot}.robotti_global.d_front_l,{robot}.robotti_global.d_front_r,{robot}.robotti_global.read_right_wheel_pos,{robot}.robotti_global.rear_left_wheel_pos,{robot}.robotti_global.theta,{robot}.robotti_global.x,{robot}.robotti_global.y
+0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+0.05,0.05,0.0,0.0,0.0,0.0,-0.014306666666666669,-0.014306666666666669,0.0,0.0,0.04833333333333334

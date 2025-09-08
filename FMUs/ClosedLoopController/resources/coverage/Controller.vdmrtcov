@@ -1,0 +1,90 @@
+class Controller
+
+	thread periodic(1e8, 0, 0, 0)(Step);
+		
+	instance variables
+        -- GPS sensor
+		private sensorGNSS_Pos: SensorGNSS;
+
+        -- actuators
+		private actuatorAngle : ActuatorSteering;
+		private actuatorSpeed : ActuatorSpeed;
+
+        -- supervisory controller
+		private modeControl : Supervisory := new Supervisory(); 
+        
+        -- sequence controller
+		private waypointControl : Sequence;
+		
+        -- loop controller
+		private steering : Steering := new Steering(); 
+
+        -- held variables
+		private steering_angle: real := 0.0;
+		private speed: real := 0.0;
+		inv speed >= 0.0;
+		private mode : Supervisory`Mode := <Stopped>;
+
+		-- x, y, theta, 0
+		private PosGNSS: seq of real := [0.0, 0.0, 0.0, 0.0];
+
+        -- waypoints
+		private init: bool := true;
+		private route_name: seq of char := "";
+		private route: Route := new Route([]);
+		private wp: WayPoint := new WayPoint(0,0);
+		
+		
+	values
+		private REQUESTED_SPEED: real = 1.0;
+		
+	operations
+	
+		public Controller: SensorGNSS * ActuatorSteering * ActuatorSpeed ==> Controller
+		Controller(gnss_pos,aSt,aSp) == (
+			sensorGNSS_Pos := gnss_pos;
+			actuatorAngle :=  aSt;
+			actuatorSpeed := aSp;
+
+			route_name := "figure_8";
+			route := Route`LoadTravlRoute(route_name);
+			waypointControl := new Sequence(route);
+			mode := modeControl.GetMode(route);
+		);
+		
+		public Step : () ==> ()
+		Step () == (
+			if init then (
+				IO`printf("Route: %s, length: %s\n", [route_name, len route.getRoute()]);
+				wp := route.NextWayPoint();
+				init := false
+			);
+
+            -- output values held from previous cycle
+			actuatorAngle.setValue(steering_angle);
+			actuatorSpeed.setValue(speed);			
+
+            -- read GPS: x, y, theta, 0
+			PosGNSS := sensorGNSS_Pos.read(); 
+						
+            -- get current mode from supervisory controller            
+			mode := modeControl.GetMode(route); 
+            
+			-- if following, compute steering; if not, stop the robot
+			if mode = <Following> then (
+                -- get current target from sequence controller
+				wp := waypointControl.GetTargetWayPoint(route, PosGNSS(1), PosGNSS(2)); 
+				
+                -- get steering angle from loop controller
+                steering_angle := steering.GetSteeringAngle(wp, PosGNSS); 
+				speed := REQUESTED_SPEED;
+			)
+			else if mode = <Stopped> then (
+				speed := 0.0;
+				return
+			);
+			 
+			IO`printf("Steering angle: %s, speed: %s, current position: [%s,%s], current waypoint: [%s,%s]\n", [steering_angle, speed, PosGNSS(1), PosGNSS(2), wp.PosX(), wp.PosY()]);
+		);
+		
+end Controller

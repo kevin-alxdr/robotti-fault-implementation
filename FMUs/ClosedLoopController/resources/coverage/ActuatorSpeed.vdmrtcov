@@ -1,0 +1,16 @@
+class ActuatorSpeed
+
+instance variables
+		port : RealPort;
+
+operations
+	
+		public ActuatorSpeed: RealPort ==> ActuatorSpeed
+			ActuatorSpeed(p) ==
+				port := p;
+		
+		public setValue: real ==> ()
+			setValue(value)==
+				port.setValue(value);
+
+end ActuatorSpeed

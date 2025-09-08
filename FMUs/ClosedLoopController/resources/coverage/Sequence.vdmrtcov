@@ -1,0 +1,41 @@
+class Sequence
+
+    /* 
+    This class represents sequence control
+
+    In this application, the sequence controller controls the waypoints being targetted. If the sequence controller determines
+    that the robot is currently close enough to the current waypoint to be considered as meeting the waypoint, it updates
+    the current target with the next sequence target (next waypoint).
+    */
+
+	instance variables
+	
+    -- stores the waypoint currently being targetted by the robot
+	private currentWaypoint: WayPoint;
+		
+	values
+	
+    public MAXIMUM_DISTANCE_FROM_WAYPOINT: real = 0.5;
+		
+	operations
+	
+		public Sequence: Route ==> Sequence
+		Sequence(route) == (
+             -- initialise current waypoint to the first waypoint in the sequence
+			currentWaypoint := route.NextWayPoint();
+		);
+		
+		/*
+			If the robot is close enough to the currently targetted waypoint to be considered as meeting the waypoint, move
+			to the next waypoint in the sequence.
+		*/
+		public GetTargetWayPoint: Route * real * real ==> WayPoint
+		GetTargetWayPoint(route, currentX, currentY) == (
+			if MATH`distance(currentWaypoint.PosX(), currentWaypoint.PosY(), currentX, currentY) <= MAXIMUM_DISTANCE_FROM_WAYPOINT and
+				not route.RouteDone() then
+				currentWaypoint := route.NextWayPoint()
+			;
+			return currentWaypoint
+		);
+
+end Sequence

@@ -1,0 +1,143 @@
+class Steering
+
+/*
+This class represents the loop controller, responsible for keeping the robot on target for the current target waypoint
+in the route sequence.
+*/
+
+	values
+		-- Steering limit values. Found through experimentation. Pi/2 is straight ahead, just below is right.
+		-- -Pi/2 is also straight ahead, just above is left.
+		private STEERING_LIMIT_MAX: real = (MATH`pi/2)-0.00000001;
+		private STEERING_LIMIT_MIN: real = (-MATH`pi/2)+0.00000001;
+
+			
+	operations
+	
+		/*
+			Given the current position and heading of the robot, and the position of the next waypoint, calculated the (best) required
+			steering angle to move the robot towards the next waypoint.
+			Basic algorithm is:
+				1. Normalise robot heading to 0 <= heading < 2*Pi. Results in final angle from north line
+				2. Calculate angle between north line and next waypoint, taking robot position as origin
+				3. Calculate the difference between the two (the error) in the range -2*Pi to 2*Pi
+		*/
+        public GetSteeringAngle: WayPoint * seq of real ==> real
+        GetSteeringAngle(wp, PosGNSS) == (
+            dcl angleToWaypoint: real := GetAngleToWaypoint(wp, PosGNSS(1), PosGNSS(2));
+            dcl adjustment: real := angleToWaypoint - NormaliseTheta(PosGNSS(3));
+            adjustment := NormaliseSteering(adjustment);
+            adjustment := LimitSteering(adjustment);
+            return adjustment;
+        )
+        post RESULT <= STEERING_LIMIT_MAX and RESULT >= STEERING_LIMIT_MIN;
+    
+    
+        /*
+            To calculate the angle of the waypoint from the robot, a custom trig function is used (based on atan2).
+            Uses tan to compute the angle of the waypoint to the nearest axis (+ve/-ve x/y) and adds the appropriate
+            radian value to base the angle from the north line (+ve y axis).
+        */
+        private
+        GetAngleToWaypoint: WayPoint * real * real ==> real
+        GetAngleToWaypoint (wp, currentX, currentY) == (
+            dcl angle: real :=
+          if currentX < wp.PosX() then
+          (
+            if currentY < wp.PosY() then 
+            (
+                (abs MATH`atan(((wp.PosX() - currentX)/(wp.PosY() - currentY)))) -- opposite == diff x, adjacent == diff y
+            )
+            else if currentY = wp.PosY() then
+            (
+                MATH`pi/2
+            )
+            else
+            (
+                (abs MATH`atan((wp.PosY() - currentY)/(wp.PosX() - currentX))) + (MATH`pi/2) -- opposite == diff y, adjacent == diff x
+            )
+          )
+          else if currentX = wp.PosX() then
+          (
+            if currentY < wp.PosY() then 0.0
+            else MATH`pi
+          )
+          else
+          (
+            if currentY < wp.PosY() then 
+            (
+                (abs MATH`atan((wp.PosY() - currentY)/(wp.PosX() - currentX))) + ((3*MATH`pi)/2) -- opposite == diff y, adjacent == diff x
+            )
+            else if currentY = wp.PosY() then
+            (
+                (3*MATH`pi)/2
+            )
+            else
+            (
+                abs (MATH`atan((wp.PosX() - currentX)/(wp.PosY() - currentY))) + MATH`pi -- opposite == diff x, adjacent == diff y
+            )
+          );
+          return angle
+        )
+        post RESULT >= 0 and RESULT < 2*MATH`pi;
+		
+        functions
+        /*
+            As found through experimentation, the useable steering range of the robot is just over -Pi/2 (left) to just under
+            Pi/2 (right).
+            This function locks the steering angle to the minimum and maximum values to prevent unexpected/erroneous behaviour.
+        */
+        private LimitSteering: real -> real
+        LimitSteering(steering_angle) == 
+        (
+            if (steering_angle < STEERING_LIMIT_MIN) then
+                STEERING_LIMIT_MIN
+            else if (steering_angle > STEERING_LIMIT_MAX) then
+                STEERING_LIMIT_MAX
+            else steering_angle
+        )
+        pre steering_angle >= -MATH`pi and steering_angle <= MATH`pi
+        post RESULT <= STEERING_LIMIT_MAX and RESULT >= STEERING_LIMIT_MIN;
+        
+        /*
+            As found through experimentation, the heading value of the robot is continuous - it does not reset at a full rotation
+            like a compass (GPS) bearing would and it can also be negative.
+            This function normalises the heading to be in the range 0 to 2*Pi from the north line.
+        */
+        private NormaliseTheta: real -> real
+        NormaliseTheta(theta) == (
+            if (theta >= (2*MATH`pi)) then
+            (
+                NormaliseTheta(theta - (2*MATH`pi))
+            )
+            else if (theta < 0.00) then
+            (
+                NormaliseTheta(theta + (2*MATH`pi))
+            )
+            else (
+              theta
+            )
+        )
+        post RESULT >= 0 and RESULT < 2*MATH`pi;
+        
+        /*
+         Adjustment (error) values can be in the range -2*Pi to 2*Pi, depending on the position of the waypoint in relation
+         to the robot. 
+         Normalises the steering value to be in the range -Pi to Pi (half rotation left or right from north line)
+        */
+        private NormaliseSteering: real -> real
+        NormaliseSteering(adjustment) == (
+            if (adjustment > MATH`pi) then
+            (
+                adjustment - (2*MATH`pi)
+            )
+            else if (adjustment <= -MATH`pi) then
+            (
+                adjustment + (2*MATH`pi)
+            )
+            else adjustment
+        )
+        pre adjustment >= -(2*MATH`pi) and adjustment <= 2*MATH`pi
+        post RESULT >= -MATH`pi and RESULT <= MATH`pi;
+			
+end Steering

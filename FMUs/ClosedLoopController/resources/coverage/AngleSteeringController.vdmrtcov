@@ -1,0 +1,46 @@
+class AngleSteeringController is subclass of SteeringController
+	instance variables
+	
+	controller : DTControl := new ADRC(P_wc, I_wo, D_b0); 
+	
+	operations
+	
+	public AngleSteeringController : int ==> AngleSteeringController
+	AngleSteeringController(type) == 
+	(
+		if type <= 0 then 
+			controller := new P(P_wc);
+		if type = 1 then
+			controller := new PI(P_wc, I_wo);
+		if type = 2 then
+			controller := new PD(P_wc, D_b0);
+		if type = 3 then
+			controller := new PID(P_wc, I_wo, D_b0);
+		if type >= 4 then
+			controller := new ADRC(P_wc, I_wo, D_b0);
+	);
+	
+	public AngleSteeringController: () ==> AngleSteeringController
+	AngleSteeringController() ==
+	    AngleSteeringController(4);
+	
+	public setControlParameter: RealPort * RealPort * RealPort ==> ()
+			setControlParameter(p, i ,d)==(
+				P_wc := p.getValue();
+				I_wo := i.getValue();
+				D_b0 := d.getValue();
+
+				controller.updataParams(P_wc, I_wo, D_b0);
+			);
+
+	public Output: seq of real ==> real
+		Output(gnss_pos) == 
+		(
+			errorCalc.UpdateError(gnss_pos,Current_WayPoint1,Current_WayPoint2); 
+			if time >= 0 then
+			controller.SetSampleTime(time);
+			let err = errorCalc.getPhiErr() in
+				 	return controller.Output(err);
+		);
+
+end AngleSteeringController

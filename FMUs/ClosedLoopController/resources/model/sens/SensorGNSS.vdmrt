@@ -1,0 +1,86 @@
+class SensorGNSS
+
+    instance variables
+        public static i_x : [SensorGNSS_E] := nil;
+        public static i_y : [SensorGNSS_N] := nil;
+        public static i_theta : [SensorGNSS_H] := nil;
+        protected local_val: seq of real := [0.0, 0.0, 0.0, 0.0];
+        public spoofTheta : real := 0.0;
+		protected offsetX : real := 0.0;
+    	protected offsetY : real := 0.0;
+        protected offsetTheta : real := 0.0;
+		public backup_val: seq of real := [0.0, 0.0, 0.0, 0.0];
+		public valid_data : seq of real := [0.0, 0.0, 0.0, 0.0];
+
+    operations
+        public SensorGNSS: SensorGNSS_E * SensorGNSS_N * SensorGNSS_H ==> SensorGNSS
+            SensorGNSS(x, y, theta) == (
+                i_x := x;
+                i_y := y;
+                i_theta := theta;
+				backup_val := [i_x.get(), i_y.get(), i_theta.get(), 0.0];
+            );
+
+		public read: () ==> seq of real
+        read() == (
+			Sync();
+			if isValid(local_val) then (
+				return local_val;
+			) else (
+				return valid_data;
+			);
+        );
+
+		public isValid: seq of real ==> bool 
+		isValid(coordinates) == (
+			if (coordinates(1) > -13 and coordinates(1) < 8) and
+			   (coordinates(2) > -4 and coordinates(2) < 18) and
+			   (coordinates(3) > -5 and coordinates(3) < 0.2) then
+			   return true
+			else
+				return false
+		);
+
+        public IntentionalSpoofing: () ==> real
+        IntentionalSpoofing() == (
+            spoofTheta := (MATH`rand(100)); 
+            local_val(3) := spoofTheta;
+			return spoofTheta;
+        );
+
+        public NaturalSpoofing: () ==> ()
+        NaturalSpoofing() == (
+            offsetX := MATH`rand(20) - 10;
+            offsetY := MATH`rand(20) - 10;
+            offsetTheta := MATH`rand(20) - 10;
+        );
+
+		public Sync: () ==> ()
+		Sync() == cycles(20)(
+
+			local_val := [i_x.get(), i_y.get(), i_theta.get(), 0.0];
+			
+			if isValid(local_val) then (
+				backup_val := local_val;
+				valid_data := local_val;
+			) else (
+				valid_data := local_val;
+			);
+
+
+			-- Intentional Spoofing
+			if time/1e9 >= 10 then (
+			  local_val(3) := spoofTheta;
+			);
+
+			-- NaturalSpoofing
+			if time/1e9 >= 10 then (
+				NaturalSpoofing();
+				local_val(1) := local_val(1) + offsetX;
+				local_val(2) := local_val(2) + offsetY;
+				local_val(3) := local_val(3) + offsetTheta;
+			);
+		);
+
+
+end SensorGNSS

@@ -1,0 +1,36 @@
+class SteeringController
+
+	instance variables
+		protected P_wc : real := 2.88;
+		protected I_wo : real := 0.8;
+		protected D_b0 : real := 0.725;
+		protected Current_WayPoint1 : [seq of real] := nil;
+		protected Current_WayPoint2 : [seq of real] := nil;
+		protected errorCalc : SteeringErrorCalc := new SteeringErrorCalc();
+		
+	operations
+		public SteeringController:() ==> SteeringController
+			SteeringController()==(
+				Current_WayPoint1 := [0.0, 0.0];
+				Current_WayPoint2 := [12.0, 2.0];
+			);
+			
+		public setControlParameter: RealPort * RealPort * RealPort ==> ()
+			setControlParameter(p, i ,d)==(
+				P_wc := p.getValue();
+				I_wo := i.getValue();
+				D_b0 := d.getValue();
+			);
+			
+		public UpdateWaypoint: seq of real * seq of real ==> ()
+			UpdateWaypoint(wp1,wp2)==(
+				Current_WayPoint1 := wp1;
+				Current_WayPoint2 := wp2;
+			)
+			pre wp1 <> wp2;
+	
+		public Output: seq of real ==> real
+		Output(gnss_pos) == 
+			is subclass responsibility;
+		
+end SteeringController

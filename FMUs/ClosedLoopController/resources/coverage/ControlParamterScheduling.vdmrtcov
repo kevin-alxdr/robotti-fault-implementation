@@ -1,0 +1,76 @@
+class ControlParamterScheduling
+
+instance variables
+	private current_speed : real;
+	private current_control_parameters: ControlParameters;
+	private parameter_list : map real to ControlParameters;
+	private maximum_speed : real;
+	private minimum_speed : real;
+	
+operations
+public ControlParamterScheduling:() ==> ControlParamterScheduling
+	ControlParamterScheduling() == (
+		current_speed := 0.0;
+		current_control_parameters := new ControlParameters(0.0,0.0);
+		
+		parameter_list := {0.0 |-> new ControlParameters(0.0,0.0)};
+		maximum_speed := current_speed;
+		minimum_speed := current_speed;
+	);
+
+public AddParameterSet: real * real * real ==> ()
+			AddParameterSet(v_in, L, P_g) == (
+				dcl v_calc : real;
+				
+				v_calc := abs(v_in*10)/10.0; --making it into round numbers
+			
+				parameter_list := parameter_list munion {v_calc |-> new ControlParameters(L,P_g)};
+				if(maximum_speed<v_in) then
+				(
+					maximum_speed := v_in;
+				);
+				if(minimum_speed>v_in) then
+				(
+					minimum_speed := v_in;
+				);
+			);
+			
+public getCurrentUsedSpeed:() ==> real
+			getCurrentUsedSpeed() == (
+				return current_speed;
+			);
+			
+public getCurrentControlParamters:() ==> ControlParameters
+		 getCurrentControlParamters() == (
+		 
+		 return current_control_parameters;
+		 );
+			
+public getControlParameters: real ==> bool * ControlParameters
+		getControlParameters (v_in) == 
+		(
+		  dcl valid_lookup: bool;
+		  valid_lookup := true;
+		  
+		  current_speed := abs(v_in*10)/10.0; --making it into round numbers
+		  ------------------------------------------------------------------
+		  -- Check if we are outside the known range
+		  ------------------------------------------------------------------
+		  if(maximum_speed < v_in) then
+		  (
+		  	current_speed := maximum_speed;
+		  	valid_lookup := false;
+		  );
+		  if(minimum_speed < v_in) then
+		  (
+		  	current_speed := minimum_speed;
+		  	valid_lookup := false;
+		  );
+		  ------------------------------------------------------------------
+		  -- do lookup
+		  current_control_parameters := parameter_list(current_speed);
+		  
+			return mk_(valid_lookup, current_control_parameters);
+		);
+		
+end ControlParamterScheduling

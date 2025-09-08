@@ -1,0 +1,1 @@
+{"startTime":0,"endTime":106,"reportProgress":true,"liveLogInterval":0,"logLevels":{"{controller}.Steering_control":["logAll","logError","logFmiCall","Protocol","VdmErr","VdmOut"],"{robot}.robotti_global":[],"{visual}.threed":[]}}

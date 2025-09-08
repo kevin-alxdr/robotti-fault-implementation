@@ -1,0 +1,33 @@
+system System
+
+instance variables 
+
+-- Hardware interface variable required by FMU Import/Export
+public static hwi: HardwareInterface := new HardwareInterface();
+-- controller
+public static controller : [Controller] := nil;
+-- cpu
+cpu1: CPU := new CPU(<FP>, 2000000) -- Set to 2 Ghz
+
+operations
+
+public System: () ==> System
+System() == (
+
+		let sensorGNSS_e = new SensorGNSS_E(hwi.pos_x),
+			sensorGNSS_n = new SensorGNSS_N(hwi.pos_y),
+			sensorGNSS_h = new SensorGNSS_H(hwi.pos_theta),
+			sensorGNSS_Pos = new SensorGNSS(sensorGNSS_e, sensorGNSS_n, sensorGNSS_h),
+			actuatorAngle = new ActuatorSteering(hwi.delta_f),
+      		actuatorSpeed = new ActuatorSpeed(hwi.speed)
+	in
+			controller := new Controller(sensorGNSS_Pos, actuatorAngle, actuatorSpeed);
+
+	-- deployment of the controller
+	cpu1.deploy(controller,"Controller")
+
+);
+
+end System
+
+

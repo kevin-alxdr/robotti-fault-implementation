@@ -1,0 +1,22 @@
+class Supervisory
+
+/* This class represents supervisory control
+   Supervisory control determines the mode the robot is currently in.
+   If there are still more waypoints to visit, the robot needs to be in Following mode which will allow
+   	steering control and forward movement.
+   If there are no more waypoints left to visit, the robot can stop moving.
+*/ 
+
+	types
+		public Mode = <Following> | <Stopped>;
+		
+	operations
+		public GetMode : Route ==> Mode
+		GetMode(route) == (
+			if route.RouteDone() then
+				return <Stopped>
+			else
+				return <Following>
+		);
+
+end Supervisory

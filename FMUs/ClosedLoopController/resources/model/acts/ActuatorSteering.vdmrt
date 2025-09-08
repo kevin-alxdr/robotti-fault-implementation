@@ -1,0 +1,16 @@
+class ActuatorSteering
+
+instance variables
+		port : RealPort;
+
+operations
+	
+		public ActuatorSteering: RealPort ==> ActuatorSteering
+			ActuatorSteering(p) ==
+				port := p;
+		
+		public setValue: real ==> ()
+			setValue(value)==
+				port.setValue(value);
+
+end ActuatorSteering

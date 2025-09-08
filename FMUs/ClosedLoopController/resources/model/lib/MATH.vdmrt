@@ -1,0 +1,161 @@
+class MATH
+
+-- 	Overture STANDARD LIBRARY: MATH
+--      --------------------------------------------
+-- 
+-- Standard library for the Overture Interpreter. When the interpreter
+-- evaluates the preliminary functions/operations in this file,
+-- corresponding internal functions is called instead of issuing a run
+-- time error. Signatures should not be changed, as well as name of
+-- module (VDM-SL) or class (VDM++). Pre/post conditions is 
+-- fully user customisable. 
+-- Dont care's may NOT be used in the parameter lists.
+
+  functions
+public static
+    sin:real +> real
+    sin(v) ==
+    is not yet specified    
+    post abs RESULT <= 1;
+
+public static
+    cos:real +> real
+    cos(v) ==
+    is not yet specified
+    post abs RESULT <= 1;
+
+public static
+    tan:real -> real
+    tan(a) ==
+    is not yet specified
+    pre cos(a) <> 0;
+
+public static
+    cot:real -> real	
+    cot(a) ==
+    is not yet specified -- Could also be: 1/tan(r)
+    pre sin(a) <> 0;
+
+public static
+    asin:real -> real
+    asin(a) ==
+    is not yet specified
+    pre abs a <= 1;
+
+public static
+    acos:real -> real
+    acos(a) ==
+    is not yet specified
+    pre abs a <= 1;
+
+public static
+    atan:real +> real
+    atan(v) ==
+    is not yet specified;
+
+public static
+    acot:real +> real
+    acot(a) ==
+    atan(1/a)
+    pre a <> 0;
+
+public static
+    sqrt:real -> real
+    sqrt(a) ==
+    is not yet specified
+    pre a >= 0;
+
+public static
+    pi_f:() +> real
+    pi_f () ==
+    is not yet specified
+
+  operations
+
+public static
+    srand:int ==> ()
+    srand(a) ==
+    let - = MATH`srand2(a) in skip
+    pre a >= -1;
+
+public static
+    rand:int ==> int 
+    rand(a) ==
+    is not yet specified;
+
+public static
+    srand2:int ==> int 
+    srand2(a) ==
+    is not yet specified
+    pre a >= -1;
+
+public static atan2: real * real ==> real
+    atan2(y,x) == (
+        dcl result: real := 0;
+        
+        if x > 0 then
+        (
+            result := atan(y/x);
+        );
+        if y>= 0 and x < 0 then
+        (
+            result := atan(y/x)+ pi;
+        );
+        if y< 0 and x < 0 then
+        (
+            result := atan(y/x) - pi;
+        );
+        if y > 0 and x = 0 then
+        (
+            result := pi/2.0;
+        );
+        if y < 0 and x = 0 then
+        (
+            result := pi/2.0;
+        );
+        return result;
+    );
+
+  functions
+
+public static
+    exp:real +> real
+    exp(a) ==
+    is not yet specified;
+
+public static
+    ln:real -> real
+    ln(a) ==
+    is not yet specified
+    pre a > 0;
+
+public static
+    log:real -> real
+    log(a) ==
+    is not yet specified
+    pre a > 0;
+
+public static 
+    fac:nat -> nat1 
+    fac(a) == 
+    is not yet specified 
+    pre a < 21;         -- The limit for 64-bit calculations
+
+-- Pythagorean formula
+public static
+		distance: real * real * real * real -> real
+		distance(x1, y1, x2, y2) ==
+			sqrt(((x2 - x1)**2) + ((y2 - y1)**2));
+			
+operations
+	public static
+			distanceBetweenWaypoints: WayPoint * WayPoint ==> real
+			distanceBetweenWaypoints(wp1, wp2) == 
+				(distance(wp1.PosX(), wp1.PosY(), wp2.PosX(), wp2.PosY()));
+
+  values
+public
+    pi = 3.14159265358979323846
+
+ 
+end MATH

@@ -1,0 +1,35 @@
+--##	EXPORT	6ddac6550166984c1327c664eea9f3e4fe92a708	ClosedLoopController.fmu	2020-06-10 22:08:35	tool-wrapper	{"name":"fmu-import-export","version":"0.2.18"}
+class HardwareInterface
+values
+	-- @ interface: type = parameter, name="controller_type";
+    public controller_type : IntPort = new IntPort(4);
+ 		-- @ interface: type = parameter, name="speed_ref";
+    public speed_ref : RealPort = new RealPort(1.0);
+    -- @ interface: type = parameter, name="control_parameter_pwc";
+    public control_parameter_pwc : RealPort = new RealPort(0.4);
+    -- @ interface: type = parameter, name="control_parameter_iwo";
+    public control_parameter_iwo : RealPort = new RealPort(2.0);
+    -- @ interface: type = parameter, name="control_parameter_db0";
+    public control_parameter_db0 : RealPort = new RealPort(0.6);
+    
+    -- @ interface: type = parameter, name="look_ahead_dist";
+    public look_ahead_dist : RealPort = new RealPort(0.2);
+    
+    -- @ interface: type = parameter, name="fname";
+    public fname : StringPort = new StringPort("route.csv");    
+    
+instance variables
+    -- @ interface: type = input, name="pos_x";
+    public pos_x : RealPort := new RealPort(0.0);
+    -- @ interface: type = input, name="pos_y";
+    public pos_y : RealPort := new RealPort(0.0);
+    -- @ interface: type = input, name="pos_theta";
+    public pos_theta : RealPort := new RealPort(0.0);
+    
+
+    -- @ interface: type = output, name="speed";
+    public speed : RealPort := new RealPort(1.0);
+    -- @ interface: type = output, name="delta_f";
+    public delta_f : RealPort := new RealPort(0.0);
+    
+end HardwareInterface

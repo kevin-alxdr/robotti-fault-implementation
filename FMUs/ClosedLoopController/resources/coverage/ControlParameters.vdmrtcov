@@ -1,0 +1,20 @@
+class ControlParameters
+
+	instance variables
+		private look_ahead : real;
+		private P_parameter : real;
+		
+	operations
+		public GetL: () ==> real
+		GetL() == return look_ahead;
+		
+		public GetP: () ==> real
+		GetP() == return P_parameter;
+		
+		public ControlParameters: real * real ==> ControlParameters
+			ControlParameters(lh,pp) ==
+			(
+				look_ahead := lh;
+				P_parameter := pp;
+			);
+end ControlParameters

@@ -1,0 +1,85 @@
+class Safety
+
+	instance variables
+		private previous_positions : seq of WayPoint := [new WayPoint(0,0), new WayPoint(0,0), new WayPoint(0,0), new WayPoint(0,0), new WayPoint(0,0)];
+		private states_recorded : nat := 0;
+		inv states_recorded <= 5;
+		
+	values
+		public STEP_TIME: real = 0.05;
+		public MAX_SAFE_SPEED: real = 1;
+		public MAX_SAFE_STEERING_ANGLE: real = MATH`pi/2;
+		public MIN_SAFE_STEERING_ANGLE: real = -MATH`pi/2;
+		
+		operations
+		
+			/*
+				Ensure the speed of the robot is within safe limits
+				Works based on actual speed (distance travelled over time) rather than requested speed
+				If the robot is travelling over the safe maximum speed, or the requested speed is over the safe maximum, 
+					sets the speed to zero (best safe course of action). 
+				Otherwise, the requested speed is allowed.
+			*/
+			public CheckSpeed: WayPoint * real ==> real
+			CheckSpeed(wp, requestedSpeed) == (
+				dcl distance: real := 0;
+				dcl timeTaken: real := 0;
+				
+				previous_positions := tl previous_positions ^ [wp];
+				if states_recorded < len previous_positions then
+				(
+					states_recorded := states_recorded + 1;
+					return requestedSpeed
+				);
+								
+				distance := TotalDistance(previous_positions);
+				timeTaken := STEP_TIME * len previous_positions;
+				
+				if distance / timeTaken > MAX_SAFE_SPEED or requestedSpeed > MAX_SAFE_SPEED then
+					return 0
+				else 
+					return requestedSpeed
+				;
+			);
+			
+		/*
+			Calculated the total distance travelled based on an arbitrary number of previously stored positions
+		*/
+		private TotalDistance: seq of WayPoint ==> real
+			TotalDistance(waypoints) == 
+			(
+				dcl distance: real := 0.0;
+				dcl currentWp: WayPoint := new WayPoint(0,0);
+				dcl nextWp: WayPoint := new WayPoint(0,0);
+				
+				for wpIndex = (len previous_positions) - 1 to 1 do
+				(
+					currentWp := previous_positions(wpIndex);
+					nextWp := previous_positions(wpIndex + 1);
+					distance := distance + MATH`distanceBetweenWaypoints(currentWp, nextWp);
+				);
+				return distance
+			)
+			pre len waypoints > 1
+			post RESULT >= 0;
+			
+	functions 
+	
+		/*
+			Checks the steering input to ensure it is safe
+			A better implementation would be to calculate the rate of turn/angular momentum or other value based on inputs, rather
+				than basing the check on the requested steering angle (as nothing guarantees actual steering angle matches the requested
+				steering angle).
+			If requested steering angle is within safe limits, it is allowed. Otherwise, steering is set to straight ahead (one possible
+				safe action. Another may be to stop the robot).
+		*/
+		public CheckSteering: real -> real
+		CheckSteering(requestedAngle) ==
+			(
+			if requestedAngle <= MAX_SAFE_STEERING_ANGLE and requestedAngle >= MIN_SAFE_STEERING_ANGLE then
+				requestedAngle
+			else
+				0
+			);
+
+end Safety
