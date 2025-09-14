@@ -1,9 +1,5 @@
-# Robotti Fault Diagnosis and Debugging
-
-## Overview
-This project involves the **Robotti agricultural robot**, where the main task was to **introduce a fault, diagnose it, implement a fix, and document the process**. The aim was to practice **debugging, model verification, and technical reporting skills** within a robotics and simulation context.
-
-
+# Robotti Fault Diagnosis and Debugging  
+This project, developed as part of the university module CSC3634, involves the **Robotti agricultural robot**, where the main task was to **introduce a fault, diagnose it, implement a fix, and document the process**. The aim was to practice **debugging, model verification, and technical reporting skills** within a robotics and simulation context.
 
 ## Technologies & Tools
 - **Modeling:** INTO-CPS  
@@ -24,5 +20,6 @@ This project involves the **Robotti agricultural robot**, where the main task wa
 
 ## How to Use
 - Clone the repository:
+
 ```bash
 git clone https://github.com/kevin-alxdr/robotti-fault-diagnosis.git
